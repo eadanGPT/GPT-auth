@@ -1,0 +1,17 @@
+{
+  "clientVersion": "1.0.0",
+  "functions": [
+    {
+      "name": "projectSpecific.foo",
+      "file": "foo.js",
+      "sha256": "PLACEHOLDER_SHA256_HEX"
+    },
+    {
+      "name": "projectSpecific.bar",
+      "file": "bar.js",
+      "sha256": "PLACEHOLDER_SHA256_HEX"
+    }
+  ],
+  "signedAt": 0,
+  "signature": ""
+}
