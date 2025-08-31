@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Client Live Page</title>
+  <style> body { font-family: system-ui; margin: 2rem; } pre { background:#f4f4f4; padding:1rem; } </style>
+</head>
+<body>
+  <h1>Live client session</h1>
+  <pre id="data"></pre>
+  <script>
+    const data = /*__DATA__*/
+    document.getElementById('data').textContent = JSON.stringify(data, null, 2);
+  </script>
+</body>
+</html>
