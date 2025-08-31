@@ -1,0 +1,26 @@
+{
+  "httpPort": 8443,
+  "wsPort": 8444,
+  "jwt": {
+    "issuer": "auth-system",
+    "audience": "clients",
+    "ttlSeconds": 259200,
+    "renewWithinSeconds": 21600
+  },
+  "security": {
+    "serverSignPubKeyBase64": "", 
+    "serverSignPrivKeyBase64": "",
+    "tokenSignSecretBase64": "", 
+    "minClientVersion": "1.0.0"
+  },
+  "persistence": {
+    "dbPath": "data/db.sqlite",
+    "backupDir": "data/backups",
+    "backupEveryMs": 7200000
+  },
+  "logging": {
+    "serverLog": "logs/server.log",
+    "authLogDir": "logs/auth",
+    "userLogDir": "logs/users"
+  }
+}
