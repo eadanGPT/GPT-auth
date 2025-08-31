@@ -12,6 +12,8 @@
        -> Need to verify with server if key is valid.
      * ws.on('close', () => {
        -> Need to reconnect or process.exit();
+     * Ticked Q/A
+       -> Need to remove {expectedServerFreq: '1_per_5'} expected values
 */
 
 import fs from 'fs';
@@ -29,6 +31,18 @@ import { obfWrap, obfEqual } from './obfuscation.js';
 const cfgPath = 'client/config.client.json';
 const cfg = JSON.parse(fs.readFileSync(cfgPath, 'utf8'));
 const logger = new ClientLogger(cfg);
+
+// -- Integrity check of global functions
+(() => {
+  const start = performance.now();
+  setTimeout(() => {
+    const elapsed = performance.now() - start;
+    if (elapsed < 1450 || elapsed > 1550) {
+      console.error(`Timing drift detected: ${elapsed}ms`);
+      process.exit(-1);
+    }
+  }, 1500);
+})();
 
 // -- Integrity check of critical file (self-hash recorded on first run)
 const criticalFiles = ['client/client.js', 'client/obfuscation.js', 'common/crypto.js'];
