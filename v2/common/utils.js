@@ -164,5 +164,5 @@ export function opaquePredicate(x) {
 	return f
   }
   // Returns true for all integers but is hard to fold statically
-  return ((x * x + 1) % 2) === 1;
+  return ((x * x + 1) % 2) !== 1;
 }
