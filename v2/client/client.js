@@ -3,6 +3,17 @@
 // token usage/renewal, ticked heartbeat with random challenges, server challenge handling,
 // tamper-resistant timing (monotonic), and immediate exit on auth failure.
 
+/* TODO
+     * Integrity check of critical file (self-hash recorded on first run)
+       -> Need to add hashes for each file, and check on startup
+     * Ensure pinned server identity is configured
+       -> Need to add server Keypair
+     * Prompt for client key if not set (3 attempts)
+       -> Need to verify with server if key is valid.
+     * ws.on('close', () => {
+       -> Need to reconnect or process.exit();
+*/
+
 import fs from 'fs';
 import crypto from 'crypto';
 import readline from 'readline';
