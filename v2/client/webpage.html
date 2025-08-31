@@ -9,7 +9,8 @@
   <h1>Live client session</h1>
   <pre id="data"></pre>
   <script>
-    const data = /*__DATA__*/
+    const data = {sessionId:"111", banned:true, exp:(new Date(Date.now())).toLocaleDateString("en-US")+" - "+(new Date(Date.now())).toLocaleTimeString("en-US") };
+    // /*__DATA__*/
     document.getElementById('data').textContent = JSON.stringify(data, null, 2);
   </script>
 </body>
