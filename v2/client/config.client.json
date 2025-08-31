@@ -1,0 +1,17 @@
+{
+  "server": {
+    "wsUrl": "ws://localhost:8444",
+    "httpUrl": "http://localhost:8443",
+    "pinnedServerSignPubKeyBase64": ""
+  },
+  "client": {
+    "version": "1.0.0",
+    "configPath": "client/config.client.json",
+    "keyBase64url": "",
+    "token": "",
+    "tokenExp": 0
+  },
+  "logging": {
+    "logDir": "logs/client"
+  }
+}
