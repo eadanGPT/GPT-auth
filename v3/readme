@@ -1,0 +1,34 @@
+Project structure
+server/
+
+index.js: WebSocket+HTTP server, CLI, RSA key handling, ECDH, JWT, challenges, tick loop, file integrity service.
+
+db.js: SQLite schema + helpers, periodic backups and checkpoints.
+
+sessions.js: Active sessions class with stats and lifecycle.
+
+logger.js: Disk-only rotating logger with levels.
+
+crypto.js: RSA, X25519, AES-GCM, HKDF/Scrypt, signatures, utilities.
+
+integrity.js: File hashing, digests, raw file service.
+
+config.json: Server config (ports, allowed hosts), generated RSA keys paths.
+
+publickey.pem / privatekey.pem: Long-term server keypair.
+
+client/
+
+index.js: Client class, config/bootstrap, ECDH handshake, auth, heartbeat, challenges, token refresh, integrity checks.
+
+crypto.js: Same AES-GCM + ECDH helpers, monotonic time, vault.
+
+logger.js: Disk-only logger.
+
+config.json: Client runtime config (server URL, pinned server public key fingerprint).
+
+shared/
+
+protocol.js: Message helpers, envelope format, challenge spec.
+
+time.js: Monotonic time + drift guards.
