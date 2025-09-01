@@ -1,0 +1,10 @@
+{
+  "name": "authkit-client",
+  "version": "1.0.0",
+  "main": "client.js",
+  "type": "commonjs",
+  "dependencies": {
+    "ws": "^8.17.0",
+    "jsonwebtoken": "^9.0.2"
+  }
+}

@@ -1,0 +1,84 @@
+
+PRAGMA journal_mode=WAL;
+CREATE TABLE IF NOT EXISTS settings (
+  k TEXT PRIMARY KEY,
+  v TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS keys (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  keyhash TEXT UNIQUE NOT NULL,
+  raw_hint TEXT,
+  created_at INTEGER NOT NULL,
+  blacklisted INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  keyhash TEXT UNIQUE NOT NULL,
+  banned_until INTEGER DEFAULT 0,
+  meta TEXT
+);
+
+CREATE TABLE IF NOT EXISTS ips (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  keyhash TEXT NOT NULL,
+  ip TEXT NOT NULL,
+  first_seen INTEGER NOT NULL,
+  last_seen INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS hwids (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  keyhash TEXT NOT NULL,
+  iface TEXT NOT NULL,
+  hwid TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS tokens (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  keyhash TEXT NOT NULL,
+  token TEXT NOT NULL,
+  issued_at INTEGER NOT NULL,
+  expires_at INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS sessions (
+  id TEXT PRIMARY KEY,
+  keyhash TEXT NOT NULL,
+  ip TEXT NOT NULL,
+  started_hr BIGINT NOT NULL,
+  last_heartbeat_hr BIGINT NOT NULL,
+  connected_time BIGINT DEFAULT 0,
+  challenges_failed INTEGER DEFAULT 0,
+  challenges_solved INTEGER DEFAULT 0,
+  login_time BIGINT DEFAULT 0,
+  meta TEXT
+);
+
+CREATE TABLE IF NOT EXISTS logs (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  keyhash TEXT NOT NULL,
+  session_id TEXT,
+  type TEXT NOT NULL,
+  payload BLOB NOT NULL,
+  created_at INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS analytics (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  keyhash TEXT NOT NULL,
+  total_connected_time BIGINT DEFAULT 0,
+  total_challenges_failed INTEGER DEFAULT 0,
+  total_challenges_solved INTEGER DEFAULT 0,
+  session_count INTEGER DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS manifest (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  version TEXT NOT NULL,
+  entry TEXT NOT NULL, -- function/file name
+  digest TEXT NOT NULL,
+  source BLOB NOT NULL,
+  updated_at INTEGER NOT NULL
+);
