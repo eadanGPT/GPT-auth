@@ -1,18 +1,15 @@
 {
-  "name": "secure-ws-bot-client",
+  "name": "secure-ws-bot-server-bot",
   "version": "1.0.0",
   "type": "module",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "ui": "node src/ui/server.js"
+    "start": "node src/index.js"
   },
   "dependencies": {
     "chalk": "^5.3.0",
     "express": "^4.19.2",
     "mineflayer": "^4.16.0",
-    "prismarine-auth": "^2.3.0",
-    "uuid": "^9.0.1",
     "ws": "^8.18.0"
   }
 }
