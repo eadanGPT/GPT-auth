@@ -1,0 +1,20 @@
+{
+  "name": "secure-ws-server",
+  "type": "module",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "cli": "node cli.js"
+  },
+  "dependencies": {
+    "basic-auth": "^2.0.1",
+    "better-sqlite3": "^9.4.0",
+    "boxen": "^7.1.1",
+    "chalk": "^5.3.0",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "uuid": "^9.0.1",
+    "ws": "^8.18.0"
+  }
+}
