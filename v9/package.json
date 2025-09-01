@@ -1,0 +1,14 @@
+{
+  "name": "secure-ws-bot-monorepo",
+  "private": true,
+  "workspaces": [
+    "server",
+    "client",
+    "server-bot"
+  ],
+  "scripts": {
+    "start:server": "node ./server/src/index.js",
+    "start:client": "node ./client/src/index.js",
+    "cli": "node ./server/src/cli.js"
+  }
+}

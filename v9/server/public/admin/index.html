@@ -1,0 +1,24 @@
+
+<!doctype html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Secure Admin</title>
+<link rel="stylesheet" href="/admin/assets/admin.css">
+</head><body>
+<nav>
+  <span class="brand">Secure Admin</span>
+  <a href="#" data-tab="sessions">Sessions</a>
+  <a href="#" data-tab="keys">Keys</a>
+  <a href="#" data-tab="users">Users</a>
+  <a href="#" data-tab="logs">Logs</a>
+  <a href="#" data-tab="settings">Settings</a>
+</nav>
+<main id="app">
+  <div class="login">
+    <h2>Authenticate</h2>
+    <input id="auth" placeholder="Base64(admin:password)"/>
+    <button id="setAuth">Set</button>
+    <p>Get the current password from the server CLI header.</p>
+  </div>
+  <section id="panel" style="display:none"></section>
+</main>
+<script src="/admin/assets/admin.js"></script>
+</body></html>
