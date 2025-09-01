@@ -1,0 +1,213 @@
+in nodejs can you write me a live auth system. Have the system built into a class for the client. Have the server authenticate the client on a websocket using the clients key. Have the server be authenticated with public signing, and issue the client a 3 day JWT token for authentication. Have the server log all full authentication processes, including keys/data used, and client data. Have the client get a long-term public key from the server to sign its logs with, and encrypt its logs before saving after authentication attempts seperate from the authentication public-key. Have the authentication complex enough that multiple people can authenticate at the exact same time. Use process.hrtime.bigint() instead of Date.now(). Exit immediately on failed auth, failed challenge, or heartbeat timeout. obfuscate all keys/tokens in memory with a runtime-generated key-hash. Run integrity checks against server digests, request files raw code over websocket if mismatched. Maintain heartbeat ticks, a heartbeat should happen every 2 minutes, and an integrity check every 5 minutes. and issue and control flow to randomly solve algebreic function challenges, subtraction/addition function challenges, or factoring challenges from client and server. dont make a note of the current auth stage in the code or handle it specifically. let the indivisual client key be stored in a config and the server authenticate the clients key, IP, and Permenant HWID from its own authentication database. let permenant hwid be based on os.cpuModel cpuCount arch totalMem hostname platform osType osRelease and networkIdentifiers. let the temporary HWID be based on PID, Active IP-Addresses, and estimated computer boot DATE based on osUptime and Datenow. Log the temporary HWID and when it changes for the server. let the key, ips, and hwids be stored in a database on the server with client info, and let all data sent between the two be encrypted. let each client have up to 3 IPs and unused IPs over 1 month being discarded. ensure all client and server challenges are answered. Please collect session analytics such as connected_time, challenges_failed, challenges_solved, login_time. Please collect the same for global analytics for the user over all sessions, and save this data on socket disconnection. if a session goes offline, save the important data and remove it from ram. if a currently active session goes to the webpage localhost:8081/clients/(user_key) show a webpage with the session analytics, aswell as global analytics. please clear client logs from memory after signing/encrypting them and saving them to storage after authentication, aswell as save any errors. let the Server maintain a client version, and a manifest of the code for each project-specific function with a signed hash-checksum, and source file that was updated. if the client is out of date, check the update manifest for functions updated, request the raw code from the server with the hash and update local function by function(code) || eval(code), do this also if the client manifest checksum is different than servers. sign the client manifests with the servers client log public key. if possible update/patch files affected with string replacement. let the client send a log to the server if integrity fails at any time that checks that all native functions are still native, if not upload the outliers with a auth-integrity fail, aswell as upload logs encrypted, then clears the logs. let the server store data in a sqllite database, and the client store it locally in (encrypted) plaintext. Please never send the clients key directly, dont send any unencrypted data between client and server where possible, and use AES-GCM where you can. Only secure client integrity, server can be presumed secure 100% of the time. Have the server save logs, client tokens, keys, and global analytics, and Per-Client data (authentication attempts, errors, auth logs, integrity logs) every time an important change is made ( Key being claimed, new user token, integrity log, ban being applied. have the client have the host ip for connection encrypted and only called upon at runtime. let this string be obfuscated in the most secure way. have the server verify timestamps with the client. every heartbeat, let there be a challenge. the only data format I want data being sent to the client from the server is {token:'',data: encrypt(data)}. have the server find the client's key from their keyhash, store all keys with their keyhashes on the server database. ensure all challenges are answered or process.exit(). have each version of the client store the hash check-sum of all custom-functions used in its enviroment. have the integrity checks be based on timing attacks to see if enviroment is modified or simulated. if the user does not have a key, prompt the user for the key and verify with server the key is valid before continuing, failing 5 times closes the process. do not create runtime encryption that can not be processed by the client later. randomize the enviroment on runtime to ensure entropy. if the client does not have the servers public keys at start-up, ensure the client receives and stores these keys. Store the servers public/private keys heavily encrypted and obfuscated in the config, or ideally hard-coded somewhere. Establish Client-Server ping on authentication. have all data that is not the config on the client be obfuscated and deobfuscated as saved & used.
+let all data between the server and client be encrypted.
+
+Give the server a CLI interface that allows the management of ActiveSessions( list, disconnect string(sessionid/key/all), send string(sessionid/key) string(cmd/code), find string(sessionid/key)), Keys( addKey string(key), addKeys int(x), listKeys, unusedKeys, removeKey string(key), blacklistKey string(key), find string(key)), Users(ban string(user) int(timeInMinutes), unban string(user), stats string(user)), Logs( logs string(sessionid/user/key/errors/auth), and Settings(allowConnections bool, maxConnections int).
+ 
+Serve me a webpage at /admin that is password protected which creates a token on the browser for 1 week and allows management of all things the CLI would. Let the webpage introduce to a list of the current active connections
+
+can you tell me how much memory it would take to run the client, and then the server with 0, 1, 10, 100 clients connected.
+do not write any pseudo-code. Never under-deliver, but if you notice something that can be added always add it without question.  
+use the following code to express the challenge system, and store all challenges in a challenge-manifest to be reused once unique challanges is over 100.
+_pickChallenge(){
+  const types = ['algebra','arith','factor','muldiv','power','modexp','gcd'];
+  const t = types[Math.floor(Math.random()*types.length)];
+
+  if(t==='algebra'){
+    // multiple equation templates
+    const sub = this._randInt(0,1);
+    if(sub===0){
+      // ax+b=c
+      const a = this._randInt(2,19);
+      const x = this._randInt(-20,20);
+      const b = this._randInt(-50,50);
+      const c = a*x + b;
+      return { type:'algebra', variant:'ax+b=c', data:{a,b,c} };
+    } else {
+      // ax+by=c
+      const a = this._randInt(2,10);
+      const b = this._randInt(2,10);
+      const x = this._randInt(-5,5);
+      const y = this._randInt(-5,5);
+      const c = a*x + b*y;
+      return { type:'algebra', variant:'ax+by=c', data:{a,b,c,y} }; // challenge asks for x given y
+    }
+  }
+
+  if(t==='arith'){
+    // add / sub variations
+    const sub = this._randInt(0,2);
+    if(sub===0){
+      const a=this._randInt(-100,100), b=this._randInt(-100,100);
+      return { type:'arith', variant:'a+b', data:{a,b,ops:['+']} };
+    }
+    if(sub===1){
+      const a=this._randInt(-100,100), b=this._randInt(-100,100), c=this._randInt(-100,100);
+      return { type:'arith', variant:'a+b+c', data:{a,b,c,ops:['+','+']} };
+    }
+    if(sub===2){
+      const a=this._randInt(-100,100), b=this._randInt(-100,100), c=this._randInt(-100,100);
+      return { type:'arith', variant:'a-b+c', data:{a,b,c,ops:['-','+']} };
+    }
+  }
+
+  if(t==='factor'){
+    const sub=this._randInt(0,1);
+    if(sub===0){
+      const P=[2,3,5,7,11,13,17,19,23][this._randInt(0,8)];
+      const Q=[29,31,37,41,43,47,53,59][this._randInt(0,7)];
+      return { type:'factor', variant:'semiprime', data:{ n:P*Q } };
+    } else {
+      const n=this._randInt(30,200);
+      return { type:'factor', variant:'generic', data:{ n } };
+    }
+  }
+
+  if(t==='muldiv'){
+    const sub=this._randInt(0,2);
+    if(sub===0){
+      const a=this._randInt(2,50), b=this._randInt(2,50);
+      return { type:'muldiv', variant:'a*b', data:{a,b,op:'*'} };
+    }
+    if(sub===1){
+      const a=this._randInt(2,20), b=this._randInt(2,20);
+      return { type:'muldiv', variant:'a*b*c', data:{a,b,c:this._randInt(2,20)} };
+    }
+    if(sub===2){
+      const a=this._randInt(2,20), b=this._randInt(2,20);
+      return { type:'muldiv', variant:'a/b', data:{a:a*b,b,op:'/'} }; // divisible
+    }
+  }
+
+  if(t==='power'){
+    const sub=this._randInt(0,1);
+    if(sub===0){
+      const base=this._randInt(2,9), exp=this._randInt(2,5);
+      return { type:'power', variant:'base^exp', data:{base,exp} };
+    } else {
+      const base=this._randInt(2,9), exp=this._randInt(2,3), mul=this._randInt(2,10);
+      return { type:'power', variant:'base^exp*mul', data:{base,exp,mul} };
+    }
+  }
+
+  if(t==='modexp'){
+    const sub=this._randInt(0,1);
+    const base=this._randInt(2,12), exp=this._randInt(2,6), mod=this._randInt(13,50);
+    if(sub===0){
+      return { type:'modexp', variant:'(base^exp)%mod', data:{base,exp,mod} };
+    } else {
+      const add=this._randInt(1,mod-1);
+      return { type:'modexp', variant:'((base^exp)+add)%mod', data:{base,exp,mod,add} };
+    }
+  }
+
+  if(t==='gcd'){
+    const sub=this._randInt(0,1);
+    if(sub===0){
+      const a=this._randInt(20,200), b=this._randInt(20,200);
+      return { type:'gcd', variant:'gcd(a,b)', data:{a,b} };
+    } else {
+      const a=this._randInt(20,200), b=this._randInt(20,200), c=this._randInt(20,200);
+      return { type:'gcd', variant:'gcd(a,b,c)', data:{a,b,c} };
+    }
+  }
+
+  return null;
+}
+
+_solve(ch){
+  if(ch.type==='algebra'){
+    if(ch.variant==='ax+b=c'){
+      const {a,b,c}=ch.data;
+      return (c-b)/a;
+    }
+    if(ch.variant==='ax+by=c'){
+      const {a,b,c,y}=ch.data;
+      return (c-b*y)/a;
+    }
+  }
+
+  if(ch.type==='arith'){
+    const {a,b,c,ops}=ch.data;
+    if(ops.length===1){
+      return ops[0]==='+' ? a+b : a-b;
+    }
+    if(ops.length===2){
+      if(ops[0]==='+' && ops[1]==='+') return a+b+c;
+      if(ops[0]==='-' && ops[1]==='+') return a-b+c;
+    }
+  }
+
+  if(ch.type==='factor'){
+    const {n}=ch.data;
+    for(let i=2;i*i<=n;i++){ if(n%i===0) return [i,n/i]; }
+    return null;
+  }
+
+  if(ch.type==='muldiv'){
+    if(ch.variant==='a*b') return ch.data.a*ch.data.b;
+    if(ch.variant==='a*b*c') return ch.data.a*ch.data.b*ch.data.c;
+    if(ch.variant==='a/b') return ch.data.a/ch.data.b;
+  }
+
+  if(ch.type==='power'){
+    if(ch.variant==='base^exp') return Math.pow(ch.data.base,ch.data.exp);
+    if(ch.variant==='base^exp*mul') return Math.pow(ch.data.base,ch.data.exp)*ch.data.mul;
+  }
+
+  if(ch.type==='modexp'){
+    const {base,exp,mod,add}=ch.data;
+    let r=1, b=base%mod, e=exp;
+    while(e>0){ if(e&1) r=(r*b)%mod; b=(b*b)%mod; e>>=1; }
+    return (add!==undefined)? (r+add)%mod : r;
+  }
+
+  if(ch.type==='gcd'){
+    if(ch.variant==='gcd(a,b)'){
+      let {a,b}=ch.data;
+      while(b!==0){ [a,b]=[b,a%b]; }
+      return a;
+    }
+    if(ch.variant==='gcd(a,b,c)'){
+      let {a,b,c}=ch.data;
+      const gcd=(x,y)=>y?gcd(y,x%y):x;
+      return gcd(gcd(a,b),c);
+    }
+  }
+
+  return null;
+}
+use the following code to hard-code the server's ip:
+(()=>{
+ return ((x * x + 1) % 2) === 1 ? 0>>1 : String.fromCharCode.apply(null,[((1<<5)+17),(28<<1|1),((1<<5)+18),((1<<5)+14),(~-50),(54^0),(~-57),(~-47),(~-50),(23<<1|0),((1<<5)+17),(~-59),(28<<1|0),(~-49),(56^0),(49^0)]);
+ })
+
+obfuscate all strings in memory then store them as the result of this function ( it returns a function's raw code, eval() )
+createEncryptedExpression( originalString), and remove any unobfuscated strings from memory:
+function createEncryptedExpression( str){
+	function obfuscateText(txt) {
+	  function obNum(n) {
+		const variants = [
+		  `(${n>>1}<<1|${n&1})`,
+		  `(~${~n})`,
+		  `((1<<${Math.floor(Math.log2(n))})+${n-(1<<Math.floor(Math.log2(n)))})`,
+		  `(${n}^0)`
+		];
+		return variants[Math.floor(Math.random() * variants.length)];
+	  }
+	  const codes = Array.from(txt).map(ch => obNum(ch.charCodeAt(0)));
+	  return new Function(`
+		return ((x * x + 1) % 2) === 1 ? 0>>1 : String.fromCharCode.apply(null,[${codes.join(',')}]);
+	  `.trim());
+	}
+	return obfuscateText( str);
+}
+Only give me a peek on the client.js file, upload the rest for download. Take your time and think out each function from a security standpoint. Make a small note on functions that can be encrypted. Any entangled runtime/post-runtime encryption/authentication please add. Add function integrity checks on runtime. Integrity checks and code-obfuscation should only be ran on the client
+
+for all strings in memory, can you protect the strings with this function, then encrypt with a secure runtime hashKey, then run the createEncryptedExpression function on to return the final result.
+// ====== Minimal string protector (runtime XOR) ======
+const _obKey = crypto.createHash('sha256').update(crypto.randomBytes(32)).digest();
+function protectString(s){ const b = Buffer.from(String(s),'utf8'); const o = Buffer.alloc(b.length); for(let i=0;i<b.length;i++) o[i]=b[i]^_obKey[i%_obKey.length]; return o; }
+function revealString(b){ const o = Buffer.alloc(b.length); for(let i=0;i<b.length;i++) o[i]=b[i]^_obKey[i%_obKey.length]; const s=o.toString('utf8'); o.fill(0); return s; }
+
+think long and hard.
+
