@@ -1,0 +1,7 @@
+{
+  "name": "live-auth-client",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "client.js",
+  "dependencies": { "ws": "^8.17.1" }
+}

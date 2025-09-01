@@ -1,0 +1,11 @@
+import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
+import db from './db.js';
+function hkdf(keyMaterial, salt, info, len=32){ return crypto.hkdfSync('sha256', keyMaterial, salt, Buffer.from(info), len); }
+function aesgcmEncrypt(key, plaintext, aad=null){ const iv=crypto.randomBytes(12); const c=crypto.createCipheriv('aes-256-gcm',key,iv); if(aad) c.setAAD(Buffer.from(aad)); const enc=Buffer.concat([c.update(plaintext),c.final()]); const tag=c.getAuthTag(); return Buffer.concat([iv,tag,enc]).toString('base64'); }
+function aesgcmDecrypt(key, b64, aad=null){ const buf=Buffer.from(b64,'base64'); const iv=buf.slice(0,12), tag=buf.slice(12,28), enc=buf.slice(28); const d=crypto.createDecipheriv('aes-256-gcm',key,iv); if(aad) d.setAAD(Buffer.from(aad)); d.setAuthTag(tag); const out=Buffer.concat([d.update(enc),d.final()]); return out; }
+const KSTORE = (()=>{ const rPriv=db.db.prepare('SELECT v FROM settings WHERE k=?').get('server_ed25519_priv'); const rPub=db.db.prepare('SELECT v FROM settings WHERE k=?').get('server_ed25519_pub'); if(rPriv&&rPub){ return { signPriv: crypto.createPrivateKey({key:Buffer.from(rPriv.v,'hex'),format:'der',type:'pkcs8'}), signPub: crypto.createPublicKey({key:Buffer.from(rPub.v,'hex'),format:'der',type:'spki'}) }; } else { const {publicKey,privateKey}=crypto.generateKeyPairSync('ed25519'); const pubDer=publicKey.export({type:'spki',format:'der'}).toString('hex'); const privDer=privateKey.export({type:'pkcs8',format:'der'}).toString('hex'); db.db.prepare('INSERT OR REPLACE INTO settings (k,v) VALUES (?,?)').run('server_ed25519_priv',privDer); db.db.prepare('INSERT OR REPLACE INTO settings (k,v) VALUES (?,?)').run('server_ed25519_pub',pubDer); return {signPriv:privateKey,signPub:publicKey}; } })();
+function sign(data){ return crypto.sign(null, Buffer.from(data), KSTORE.signPriv).toString('hex'); }
+function verify(data, sigHex){ try{ return crypto.verify(null, Buffer.from(data), KSTORE.signPub, Buffer.from(sigHex,'hex')); }catch(e){ return false; } }
+function issueJWT(payload){ return jwt.sign(payload, Buffer.from(sign('jwt-secret')), { algorithm:'HS256', expiresIn:'3d' }); }
+export { hkdf, aesgcmEncrypt, aesgcmDecrypt, sign, verify, KSTORE, issueJWT };

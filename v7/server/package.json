@@ -1,0 +1,8 @@
+{
+  "name": "live-auth-server",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "scripts": { "start": "node index.js", "cli": "node cli.js" },
+  "dependencies": { "better-sqlite3": "^9.4.0", "cookie-parser": "^1.4.6", "express": "^4.19.2", "jsonwebtoken": "^9.0.2", "ws": "^8.17.1" }
+}
