@@ -1,0 +1,424 @@
+Consolidated Function Tree
+==========================
+
+--- Free Functions ---
+Function Tree (Plaintext with Return Types)
+===========================================
+
+analytics.js
+------------
+- run(cmd)
+  Inputs: cmd (object with action, data)
+  Returns: Promise<object>
+  Outputs: event summary or error object
+  Description: Main entrypoint for analytics module, routes actions like "track" or "summary".
+
+- trackEvent(data)
+  Inputs: data (event type, payload)
+  Returns: object { ok: true, count: number }
+  Outputs: count of tracked events
+  Description: Records an event in memory, safe sandboxed storage.
+
+- getSummary()
+  Inputs: none
+  Returns: object { ok: true, total: number, counts: Record<string,number> }
+  Outputs: summary of tracked events
+  Description: Aggregates events by type.
+
+client.advanced.js
+------------------
+- fetchModule(sendAndWait, session, moduleId)
+  Inputs: sendAndWait(fn), session(object), moduleId(string)
+  Returns: Promise<{ bytes: Buffer, context: object, loaderJscB64: string|null }>
+  Outputs: decrypted and verified module bundle
+  Description: Fetches, decrypts, and verifies a module from the server.
+
+- WorkerManager.ensure()
+  Inputs: none
+  Returns: Promise<string>
+  Outputs: path to worker script
+  Description: Ensures the client.worker.js loader is available.
+
+- WorkerManager.run(moduleId, moduleCodeBuffer, ws, keyHashHex, moduleContext)
+  Inputs: moduleId(string), moduleCodeBuffer(Buffer), ws(WebSocket), keyHashHex(string), moduleContext(object)
+  Returns: Promise<void>
+  Outputs: executes module in worker
+  Description: Spawns a worker with sandboxed execution.
+
+- Verifier.verifyRpcChunks(moduleId, chunks)
+  Inputs: moduleId(string), chunks(array)
+  Returns: Promise<void>
+  Outputs: throws on mismatch
+  Description: Confirms server-supplied RPC API definitions.
+
+- Verifier.verifyModuleBytes(moduleId, bytes)
+  Inputs: moduleId(string), bytes(Buffer)
+  Returns: Promise<void>
+  Outputs: throws on mismatch
+  Description: Confirms module hash matches manifest.
+
+client.worker.js
+----------------
+- verifyContextSig(ctx)
+  Inputs: ctx(object with sig, pub)
+  Returns: boolean
+  Outputs: true if signature valid
+  Description: Verifies Ed25519 signature on module context.
+
+- makeSandboxRequire(perms)
+  Inputs: perms(object with allowModules etc)
+  Returns: function (require proxy)
+  Outputs: restricted require function
+  Description: Restricts accessible Node modules to allow-listed ones.
+
+- (async main IIFE)
+  Inputs: workerData { moduleId, moduleCodeB64, moduleContext }
+  Returns: none (communicates via parentPort)
+  Outputs: ok/error messages
+  Description: Verifies context, enforces sandbox, runs module code, dispatches run or onCommand.
+
+server.js
+---------
+- signObject(obj)
+  Inputs: object
+  Returns: string (base64 signature)
+  Outputs: signed module context
+  Description: Signs module context using Ed25519.
+
+- get_module(ws, req, msg)
+  Inputs: ws(WebSocket), req(Request), msg(object with moduleId)
+  Returns: none (sends response)
+  Outputs: encrypted payload containing module + signed context
+  Description: Reads module, builds context, signs it, encrypts, and returns to client.
+
+- sha256hex(data)
+  Inputs: string|Buffer
+  Returns: string (hex)
+  Outputs: hash
+  Description: Utility to compute SHA256 digest.
+
+
+
+--- Class Methods ---
+Function Tree (including Classes)
+==================================
+
+client.advanced.js :: class ChunkTransport
+  - constructor(ws, maxSize = 64 * 1024)
+    Returns: (unknown)
+
+client.advanced.js :: class ChunkTransport
+  - sendString(str)
+    Returns: (unknown)
+
+client.advanced.js :: class ChunkTransport
+  - if(buf.length <= this.max)
+    Returns: (unknown)
+
+client.advanced.js :: class ChunkTransport
+  - for(let i=0;i<total;i++)
+    Returns: (unknown)
+
+client.advanced.js :: class ChunkTransport
+  - receive(raw)
+    Returns: raw.toString(); JSON.stringify(msg); out.toString('utf8'); null
+
+client.advanced.js :: class ChunkTransport
+  - if(st.parts[i]==null)
+    Returns: (unknown)
+
+client.advanced.js :: class ChunkTransport
+  - if(st.got===st.total)
+    Returns: out.toString('utf8')
+
+client.advanced.js :: class Session
+  - constructor()
+    Returns: (unknown)
+
+client.advanced.js :: class Session
+  - derive(shared, serverNonce)
+    Returns: (unknown)
+
+client.advanced.js :: class Session
+  - oneTime(dir, seq)
+    Returns: { oneKey, iv }
+
+client.advanced.js :: class Session
+  - encrypt(dir, payloadObj)
+    Returns: { typ:'env', seq, dir, iv: iv.toString('hex'), ct: ct.toString('base64'), tag...
+
+client.advanced.js :: class Session
+  - decrypt(dir, envMsg)
+    Returns: JSON.parse(pt)
+
+client.advanced.js :: class Session
+  - moduleKey(moduleId, nonceBuf)
+    Returns: hkdf(this.prk, Buffer.concat([Buffer.from(String(moduleId)), nonceBuf]), Buff...
+
+client.advanced.js :: class Verifier
+  - constructor(sendAndWait)
+    Returns: (unknown)
+
+client.advanced.js :: class Verifier
+  - manifest()
+    Returns: this._manifest
+
+client.advanced.js :: class Verifier
+  - verifyRpcChunks(moduleId, got)
+    Returns: true
+
+client.advanced.js :: class Verifier
+  - verifyModuleBytes(moduleId, bytes)
+    Returns: true
+
+client.advanced.js :: class WorkerManager
+  - constructor(sendAndWait)
+    Returns: (unknown)
+
+client.advanced.js :: class WorkerManager
+  - ensure()
+    Returns: WORKER_FILE
+
+client.advanced.js :: class WorkerManager
+  - run(moduleId, moduleCodeBuffer, ws, keyHashHex)
+    Returns: new Promise((resolve, reject)=>{
+      w.once('message', resolve)
+
+client.advanced.js :: class AdvancedUI
+  - constructor()
+    Returns: (unknown)
+
+client.advanced.js :: class AdvancedUI
+  - addLog(type, msg)
+    Returns: (unknown)
+
+client.advanced.js :: class AdvancedUI
+  - start()
+    Returns: this.redraw()
+
+client.advanced.js :: class AdvancedUI
+  - draw()
+    Returns: (unknown)
+
+client.advanced.js :: class AdvancedUI
+  - redraw()
+    Returns: (unknown)
+
+server.js :: class ManifestService
+  - computeSha256ForModule(name)
+    Returns: null; crypto.createHash('sha256').update(buf).digest('hex')
+
+server.js :: class ManifestService
+  - toMap(modulesArr)
+    Returns: out
+
+server.js :: class ManifestService
+  - for(const m of modulesArr)
+    Returns: (unknown)
+
+server.js :: class ManifestService
+  - filterByScopes(mf, scopes)
+    Returns: { version: mf.version || '1', modules: asMap }
+
+server.js :: class ManifestService
+  - for(const m of filtered)
+    Returns: (unknown)
+
+server.js :: class ManifestService
+  - get()
+    Returns: {
+	  name,
+	  description,
+	  permissions: ['user'],      // default or exten...; mf
+
+server.js :: class ManifestService
+  - module(id)
+    Returns: mf.modules?.[id] || mf[id] || null
+
+server.js :: class RpcLogger
+  - append(obj)
+    Returns: (unknown)
+
+server.js :: class Session
+  - constructor()
+    Returns: (unknown)
+
+server.js :: class Session
+  - derive(shared, clientNonce, serverNonce)
+    Returns: (unknown)
+
+server.js :: class Session
+  - oneTime(dir, seq)
+    Returns: { oneKey, iv }
+
+server.js :: class Session
+  - encrypt(dir, payloadObj)
+    Returns: { typ:'env', seq, dir, iv: iv.toString('hex'), ct: ct.toString('base64'), tag...
+
+server.js :: class Session
+  - decrypt(dir, envMsg)
+    Returns: JSON.parse(pt)
+
+server.js :: class Session
+  - moduleKey(moduleId, nonceBuf)
+    Returns: hkdf(this.prk, Buffer.concat([Buffer.from(String(moduleId)), nonceBuf]), Buff...
+
+patched_project_final/patched_project/server/client.advanced.js :: class ChunkTransport
+  - constructor(ws, maxSize = 64 * 1024)
+    Returns: (unknown)
+
+patched_project_final/patched_project/server/client.advanced.js :: class ChunkTransport
+  - sendString(str)
+    Returns: (unknown)
+
+patched_project_final/patched_project/server/client.advanced.js :: class ChunkTransport
+  - if(buf.length <= this.max)
+    Returns: (unknown)
+
+patched_project_final/patched_project/server/client.advanced.js :: class ChunkTransport
+  - for(let i=0;i<total;i++)
+    Returns: (unknown)
+
+patched_project_final/patched_project/server/client.advanced.js :: class ChunkTransport
+  - receive(raw)
+    Returns: raw.toString(); JSON.stringify(msg); out.toString('utf8'); null
+
+patched_project_final/patched_project/server/client.advanced.js :: class ChunkTransport
+  - if(st.parts[i]==null)
+    Returns: (unknown)
+
+patched_project_final/patched_project/server/client.advanced.js :: class ChunkTransport
+  - if(st.got===st.total)
+    Returns: out.toString('utf8')
+
+patched_project_final/patched_project/server/client.advanced.js :: class Session
+  - constructor()
+    Returns: (unknown)
+
+patched_project_final/patched_project/server/client.advanced.js :: class Session
+  - derive(shared, serverNonce)
+    Returns: (unknown)
+
+patched_project_final/patched_project/server/client.advanced.js :: class Session
+  - oneTime(dir, seq)
+    Returns: { oneKey, iv }
+
+patched_project_final/patched_project/server/client.advanced.js :: class Session
+  - encrypt(dir, payloadObj)
+    Returns: { typ:'env', seq, dir, iv: iv.toString('hex'), ct: ct.toString('base64'), tag...
+
+patched_project_final/patched_project/server/client.advanced.js :: class Session
+  - decrypt(dir, envMsg)
+    Returns: JSON.parse(pt)
+
+patched_project_final/patched_project/server/client.advanced.js :: class Session
+  - moduleKey(moduleId, nonceBuf)
+    Returns: hkdf(this.prk, Buffer.concat([Buffer.from(String(moduleId)), nonceBuf]), Buff...
+
+patched_project_final/patched_project/server/client.advanced.js :: class Verifier
+  - constructor(sendAndWait)
+    Returns: (unknown)
+
+patched_project_final/patched_project/server/client.advanced.js :: class Verifier
+  - manifest()
+    Returns: this._manifest
+
+patched_project_final/patched_project/server/client.advanced.js :: class Verifier
+  - verifyRpcChunks(moduleId, got)
+    Returns: true
+
+patched_project_final/patched_project/server/client.advanced.js :: class Verifier
+  - verifyModuleBytes(moduleId, bytes)
+    Returns: true
+
+patched_project_final/patched_project/server/client.advanced.js :: class WorkerManager
+  - constructor(sendAndWait)
+    Returns: (unknown)
+
+patched_project_final/patched_project/server/client.advanced.js :: class WorkerManager
+  - ensure()
+    Returns: WORKER_FILE
+
+patched_project_final/patched_project/server/client.advanced.js :: class WorkerManager
+  - run(moduleId, moduleCodeBuffer, ws, keyHashHex)
+    Returns: new Promise((resolve, reject)=>{
+      w.once('message', resolve)
+
+patched_project_final/patched_project/server/client.advanced.js :: class AdvancedUI
+  - constructor()
+    Returns: (unknown)
+
+patched_project_final/patched_project/server/client.advanced.js :: class AdvancedUI
+  - addLog(type, msg)
+    Returns: (unknown)
+
+patched_project_final/patched_project/server/client.advanced.js :: class AdvancedUI
+  - start()
+    Returns: this.redraw()
+
+patched_project_final/patched_project/server/client.advanced.js :: class AdvancedUI
+  - draw()
+    Returns: (unknown)
+
+patched_project_final/patched_project/server/client.advanced.js :: class AdvancedUI
+  - redraw()
+    Returns: (unknown)
+
+patched_project_final/patched_project/server/server.js :: class ManifestService
+  - computeSha256ForModule(name)
+    Returns: null; crypto.createHash('sha256').update(buf).digest('hex')
+
+patched_project_final/patched_project/server/server.js :: class ManifestService
+  - toMap(modulesArr)
+    Returns: out
+
+patched_project_final/patched_project/server/server.js :: class ManifestService
+  - for(const m of modulesArr)
+    Returns: (unknown)
+
+patched_project_final/patched_project/server/server.js :: class ManifestService
+  - filterByScopes(mf, scopes)
+    Returns: { version: mf.version || '1', modules: asMap }
+
+patched_project_final/patched_project/server/server.js :: class ManifestService
+  - for(const m of filtered)
+    Returns: (unknown)
+
+patched_project_final/patched_project/server/server.js :: class ManifestService
+  - get()
+    Returns: {
+	  name,
+	  description,
+	  permissions: ['user'],      // default or exten...; mf
+
+patched_project_final/patched_project/server/server.js :: class ManifestService
+  - module(id)
+    Returns: mf.modules?.[id] || mf[id] || null
+
+patched_project_final/patched_project/server/server.js :: class RpcLogger
+  - append(obj)
+    Returns: (unknown)
+
+patched_project_final/patched_project/server/server.js :: class Session
+  - constructor()
+    Returns: (unknown)
+
+patched_project_final/patched_project/server/server.js :: class Session
+  - derive(shared, clientNonce, serverNonce)
+    Returns: (unknown)
+
+patched_project_final/patched_project/server/server.js :: class Session
+  - oneTime(dir, seq)
+    Returns: { oneKey, iv }
+
+patched_project_final/patched_project/server/server.js :: class Session
+  - encrypt(dir, payloadObj)
+    Returns: { typ:'env', seq, dir, iv: iv.toString('hex'), ct: ct.toString('base64'), tag...
+
+patched_project_final/patched_project/server/server.js :: class Session
+  - decrypt(dir, envMsg)
+    Returns: JSON.parse(pt)
+
+patched_project_final/patched_project/server/server.js :: class Session
+  - moduleKey(moduleId, nonceBuf)
+    Returns: hkdf(this.prk, Buffer.concat([Buffer.from(String(moduleId)), nonceBuf]), Buff...
